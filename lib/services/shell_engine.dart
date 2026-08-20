@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import '../models/app_config.dart';
 import '../models/github_item.dart';
 import '../models/jules_request.dart';
@@ -14,6 +16,12 @@ class ShellEngine {
   final List<String> _commandHistory = [];
   final List<JulesRequest> _requestHistory = [];
 
+  // Performance Optimization: Cache UnmodifiableListView wrappers to avoid O(N) list
+  // copying on every getter invocation (preventing O(N^2) overhead during UI list rendering).
+  late final UnmodifiableListView<ShellOutput> _unmodifiableOutputs = UnmodifiableListView(_outputs);
+  late final UnmodifiableListView<String> _unmodifiableCommandHistory = UnmodifiableListView(_commandHistory);
+  late final UnmodifiableListView<JulesRequest> _unmodifiableRequestHistory = UnmodifiableListView(_requestHistory);
+
   GitHubItem? _activeGitHubContext;
 
   ShellEngine({
@@ -29,9 +37,9 @@ class ShellEngine {
     ));
   }
 
-  List<ShellOutput> get outputs => List.unmodifiable(_outputs);
-  List<String> get commandHistory => List.unmodifiable(_commandHistory);
-  List<JulesRequest> get requestHistory => List.unmodifiable(_requestHistory);
+  List<ShellOutput> get outputs => _unmodifiableOutputs;
+  List<String> get commandHistory => _unmodifiableCommandHistory;
+  List<JulesRequest> get requestHistory => _unmodifiableRequestHistory;
   GitHubItem? get activeGitHubContext => _activeGitHubContext;
 
   void setRequests(List<JulesRequest> requests) {

@@ -69,14 +69,15 @@ class GitHubService {
     return _getDemoIssues(targetRepo);
   }
 
+  static final RegExp _prRegExp = RegExp(r'github\.com/([^/]+/[^/]+)/pull/(\d+)');
+  static final RegExp _issueRegExp = RegExp(r'github\.com/([^/]+/[^/]+)/issues/(\d+)');
+  static final RegExp _shortRefRegExp = RegExp(r'^(?:([^/]+/[^#]+))?#(\d+)$');
+
   GitHubItem? parseGitHubUrl(String input, {String? defaultRepo}) {
     final trimmed = input.trim();
     final repo = defaultRepo ?? _config.defaultRepo;
 
-    final prRegExp = RegExp(r'github\.com/([^/]+/[^/]+)/pull/(\d+)');
-    final issueRegExp = RegExp(r'github\.com/([^/]+/[^/]+)/issues/(\d+)');
-
-    var match = prRegExp.firstMatch(trimmed);
+    var match = _prRegExp.firstMatch(trimmed);
     if (match != null) {
       final matchedRepo = match.group(1)!;
       final number = int.parse(match.group(2)!);
@@ -94,7 +95,7 @@ class GitHubService {
       );
     }
 
-    match = issueRegExp.firstMatch(trimmed);
+    match = _issueRegExp.firstMatch(trimmed);
     if (match != null) {
       final matchedRepo = match.group(1)!;
       final number = int.parse(match.group(2)!);
@@ -112,8 +113,7 @@ class GitHubService {
       );
     }
 
-    final shortRefRegExp = RegExp(r'^(?:([^/]+/[^#]+))?#(\d+)$');
-    match = shortRefRegExp.firstMatch(trimmed);
+    match = _shortRefRegExp.firstMatch(trimmed);
     if (match != null) {
       final matchedRepo = match.group(1) ?? repo;
       final number = int.parse(match.group(2)!);
