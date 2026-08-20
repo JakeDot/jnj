@@ -20,10 +20,12 @@ class _DashboardViewState extends State<DashboardView> {
 
   @override
   Widget build(BuildContext context) {
-    final requests = widget.shellEngine.requestHistory.where((req) {
-      if (_statusFilter == null) return true;
-      return req.status == _statusFilter;
-    }).toList();
+    // Performance Optimization: Avoid O(N) list allocation and iteration on every render frame
+    // when no status filter is applied.
+    final allRequests = widget.shellEngine.requestHistory;
+    final requests = _statusFilter == null
+        ? allRequests
+        : allRequests.where((req) => req.status == _statusFilter).toList();
 
     return Column(
       children: [

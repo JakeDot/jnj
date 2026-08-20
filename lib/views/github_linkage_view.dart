@@ -241,12 +241,15 @@ class _GitHubLinkageViewState extends State<GitHubLinkageView> with SingleTicker
   }
 
   Widget _buildItemsList(List<GitHubItem> items) {
-    final filtered = items.where((item) {
-      if (_searchQuery.isEmpty) return true;
-      return item.title.toLowerCase().contains(_searchQuery) ||
-          item.number.toString().contains(_searchQuery) ||
-          item.author.toLowerCase().contains(_searchQuery);
-    }).toList();
+    // Performance Optimization: Avoid O(N) list allocation, string conversions, and iteration
+    // on every render frame when the search query is empty.
+    final filtered = _searchQuery.isEmpty
+        ? items
+        : items.where((item) {
+            return item.title.toLowerCase().contains(_searchQuery) ||
+                item.number.toString().contains(_searchQuery) ||
+                item.author.toLowerCase().contains(_searchQuery);
+          }).toList();
 
     if (filtered.isEmpty) {
       return const Center(
