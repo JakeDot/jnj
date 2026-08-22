@@ -34,6 +34,12 @@ class GitHubItem {
 
   String get shortRef => '$repo#$number';
 
+  // Performance Optimization: Cache lowercased searchable representation lazily on first access.
+  // Avoids O(N) string allocations (toLowerCase/toString) per item on every keystroke during list filtering.
+  late final String _searchableText = '$number $title $author $shortRef'.toLowerCase();
+
+  bool matchesSearch(String query) => _searchableText.contains(query.toLowerCase());
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
