@@ -64,5 +64,13 @@ void main() {
       expect(issues.isNotEmpty, isTrue);
       expect(issues.first.isIssue, isTrue);
     });
+
+    test('matchesSearch performs cached case-insensitive lookup for title, number, author, and repo ref', () {
+      final item = gitHubService.parseGitHubUrl('https://github.com/flutter/flutter/pull/12345')!;
+      expect(item.matchesSearch('12345'), isTrue);
+      expect(item.matchesSearch('flutter/flutter'), isTrue);
+      expect(item.matchesSearch('PULL REQUEST'), isTrue);
+      expect(item.matchesSearch('nonexistent'), isFalse);
+    });
   });
 }
