@@ -249,9 +249,11 @@ class _GitHubLinkageViewState extends State<GitHubLinkageView> with SingleTicker
     final filtered = query.isEmpty
         ? items
         : items.where((item) {
-            return item.title.toLowerCase().contains(query) ||
-                item.number.toString().contains(query) ||
-                item.author.toLowerCase().contains(query);
+            // Performance Optimization: Use pre-cached titleLower, numberStr, and authorLower
+            // to avoid lowercasing strings and allocating String objects on every render frame per item.
+            return item.titleLower.contains(query) ||
+                item.numberStr.contains(query) ||
+                item.authorLower.contains(query);
           }).toList();
 
     if (filtered.isEmpty) {

@@ -14,6 +14,12 @@ class GitHubItem {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  // Performance Optimization: Cache string representations and lowercased fields to prevent
+  // repeated string allocations and lowercasing per item during list searching.
+  late final String numberStr = number.toString();
+  late final String titleLower = title.toLowerCase();
+  late final String authorLower = author.toLowerCase();
+
   GitHubItem({
     required this.id,
     required this.number,
