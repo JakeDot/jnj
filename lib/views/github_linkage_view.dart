@@ -241,18 +241,13 @@ class _GitHubLinkageViewState extends State<GitHubLinkageView> with SingleTicker
   }
 
   Widget _buildItemsList(List<GitHubItem> items) {
-    // Performance Optimization: Avoid O(N) list allocation, string conversions, and iteration
-    // on every render frame when the search query is empty.
-    // Also note: _searchQuery is already kept lowercased by _searchController listener/onChanged,
-    // so we avoid redundant _searchQuery.toLowerCase() calls per item.
+    // Performance Optimization: Use precomputed searchKey on GitHubItem to avoid
+    // O(N) string allocations (title.toLowerCase(), number.toString(), author.toLowerCase())
+    // and multiple string searches on every keystroke render frame.
     final query = _searchQuery;
     final filtered = query.isEmpty
         ? items
-        : items.where((item) {
-            return item.title.toLowerCase().contains(query) ||
-                item.number.toString().contains(query) ||
-                item.author.toLowerCase().contains(query);
-          }).toList();
+        : items.where((item) => item.searchKey.contains(query)).toList();
 
     if (filtered.isEmpty) {
       return const Center(

@@ -14,6 +14,12 @@ class GitHubItem {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  // Performance Optimization: Cache precomputed properties (shortRef and searchKey)
+  // during initialization to avoid repeated string interpolations, lowercasing,
+  // and conversions during UI list rendering and live search filtering.
+  final String shortRef;
+  final String searchKey;
+
   GitHubItem({
     required this.id,
     required this.number,
@@ -27,12 +33,11 @@ class GitHubItem {
     this.commentsCount = 0,
     required this.createdAt,
     required this.updatedAt,
-  });
+  })  : shortRef = '$repo#$number',
+        searchKey = '${title.toLowerCase()} $number ${author.toLowerCase()}';
 
   bool get isPR => type == GitHubItemType.pullRequest;
   bool get isIssue => type == GitHubItemType.issue;
-
-  String get shortRef => '$repo#$number';
 
   Map<String, dynamic> toJson() {
     return {

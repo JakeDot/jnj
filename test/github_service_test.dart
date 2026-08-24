@@ -64,5 +64,15 @@ void main() {
       expect(issues.isNotEmpty, isTrue);
       expect(issues.first.isIssue, isTrue);
     });
+
+    test('Precomputes shortRef and searchKey on GitHubItem', () {
+      const url = 'https://github.com/flutter/flutter/pull/12345';
+      final item = gitHubService.parseGitHubUrl(url)!;
+
+      expect(item.shortRef, equals('flutter/flutter#12345'));
+      expect(item.searchKey, contains('pull request #12345 (flutter/flutter)'));
+      expect(item.searchKey, contains('12345'));
+      expect(item.searchKey, contains('github-user'));
+    });
   });
 }
