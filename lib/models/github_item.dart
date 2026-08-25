@@ -14,6 +14,10 @@ class GitHubItem {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  // Performance Optimization: Pre-compute shortRef during construction to avoid
+  // repeated string interpolation '$repo#$number' allocations during list widget build loops.
+  final String shortRef;
+
   GitHubItem({
     required this.id,
     required this.number,
@@ -27,12 +31,10 @@ class GitHubItem {
     this.commentsCount = 0,
     required this.createdAt,
     required this.updatedAt,
-  });
+  }) : shortRef = '$repo#$number';
 
   bool get isPR => type == GitHubItemType.pullRequest;
   bool get isIssue => type == GitHubItemType.issue;
-
-  String get shortRef => '$repo#$number';
 
   Map<String, dynamic> toJson() {
     return {
