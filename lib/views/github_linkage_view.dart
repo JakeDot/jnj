@@ -27,6 +27,8 @@ class _GitHubLinkageViewState extends State<GitHubLinkageView> with SingleTicker
 
   List<GitHubItem> _pullRequests = [];
   List<GitHubItem> _issues = [];
+  List<GitHubItem> _filteredPullRequests = [];
+  List<GitHubItem> _filteredIssues = [];
   bool _isLoading = true;
   String _searchQuery = '';
 
@@ -57,6 +59,7 @@ class _GitHubLinkageViewState extends State<GitHubLinkageView> with SingleTicker
       setState(() {
         _pullRequests = prs;
         _issues = issues;
+        _updateFilteredLists();
         _isLoading = false;
       });
     }
@@ -77,6 +80,25 @@ class _GitHubLinkageViewState extends State<GitHubLinkageView> with SingleTicker
           backgroundColor: Colors.redAccent,
         ),
       );
+    }
+  }
+
+  void _updateFilteredLists() {
+    final query = _searchQuery.trim().toLowerCase();
+    if (query.isEmpty) {
+      _filteredPullRequests = _pullRequests;
+      _filteredIssues = _issues;
+    } else {
+      _filteredPullRequests = _pullRequests.where((item) {
+        return item.title.toLowerCase().contains(query) ||
+            item.number.toString().contains(query) ||
+            item.author.toLowerCase().contains(query);
+      }).toList();
+      _filteredIssues = _issues.where((item) {
+        return item.title.toLowerCase().contains(query) ||
+            item.number.toString().contains(query) ||
+            item.author.toLowerCase().contains(query);
+      }).toList();
     }
   }
 
@@ -219,7 +241,8 @@ class _GitHubLinkageViewState extends State<GitHubLinkageView> with SingleTicker
             ),
             onChanged: (val) {
               setState(() {
-                _searchQuery = val.toLowerCase();
+                _searchQuery = val;
+                _updateFilteredLists();
               });
             },
           ),
@@ -231,8 +254,8 @@ class _GitHubLinkageViewState extends State<GitHubLinkageView> with SingleTicker
               : TabBarView(
                   controller: _tabController,
                   children: [
-                    _buildItemsList(_pullRequests),
-                    _buildItemsList(_issues),
+                    _buildItemsList(_filteredPullRequests),
+                    _buildItemsList(_filteredIssues),
                   ],
                 ),
         ),
@@ -241,20 +264,10 @@ class _GitHubLinkageViewState extends State<GitHubLinkageView> with SingleTicker
   }
 
   Widget _buildItemsList(List<GitHubItem> items) {
-    // Performance Optimization: Avoid O(N) list allocation, string conversions, and iteration
-    // on every render frame when the search query is empty.
-    // Also note: _searchQuery is already kept lowercased by _searchController listener/onChanged,
-    // so we avoid redundant _searchQuery.toLowerCase() calls per item.
-    final query = _searchQuery;
-    final filtered = query.isEmpty
-        ? items
-        : items.where((item) {
-            return item.title.toLowerCase().contains(query) ||
-                item.number.toString().contains(query) ||
-                item.author.toLowerCase().contains(query);
-          }).toList();
-
-    if (filtered.isEmpty) {
+    // Performance Optimization: Cache pre-filtered list passed into _buildItemsList to avoid
+    // O(N) list allocations, string lowercasing, and predicate evaluations on every render frame
+    // during tab switches, selection changes, and UI animations.
+    if (items.isEmpty) {
       return const Center(
         child: Text('No matching items found.', style: TextStyle(color: Colors.white54, fontSize: 14)),
       );
@@ -262,9 +275,9 @@ class _GitHubLinkageViewState extends State<GitHubLinkageView> with SingleTicker
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      itemCount: filtered.length,
+      itemCount: items.length,
       itemBuilder: (context, index) {
-        final item = filtered[index];
+        final item = items[index];
         final isSelected = widget.shellEngine.activeGitHubContext?.id == item.id;
 
         return Card(
