@@ -256,7 +256,9 @@ class _TerminalViewState extends State<TerminalView> {
         break;
     }
 
-    final isCommand = item.content.startsWith('\$ ');
+    // Performance Optimization: Use pre-computed isCommand property on ShellOutput
+    // instead of calling content.startsWith('\$ ') on every build/render frame.
+    final isCommand = item.isCommand;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
