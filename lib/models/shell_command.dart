@@ -9,6 +9,9 @@ class ShellOutput {
   final DateTime timestamp;
   final JulesRequest? request;
   final GitHubItem? githubItem;
+  // Performance Optimization: Pre-compute `isCommand` at initialization time
+  // to avoid evaluating `content.startsWith('\$ ')` on every render frame per output tile.
+  final bool isCommand;
 
   ShellOutput({
     required this.content,
@@ -16,7 +19,8 @@ class ShellOutput {
     DateTime? timestamp,
     this.request,
     this.githubItem,
-  }) : timestamp = timestamp ?? DateTime.now();
+  })  : timestamp = timestamp ?? DateTime.now(),
+        isCommand = content.startsWith('\$ ');
 }
 
 class ParsedCommand {
