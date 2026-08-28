@@ -14,6 +14,15 @@ class GitHubItem {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  // Cached lowercase fields and string representation for O(1) matching during filtering
+  late final String _numberString = number.toString();
+  late final String _lowercaseTitle = title.toLowerCase();
+  late final String _lowercaseAuthor = author.toLowerCase();
+
+  String get numberString => _numberString;
+  String get lowercaseTitle => _lowercaseTitle;
+  String get lowercaseAuthor => _lowercaseAuthor;
+
   GitHubItem({
     required this.id,
     required this.number,
