@@ -33,6 +33,7 @@ class GitHubItem {
   bool get isIssue => type == GitHubItemType.issue;
 
   String get shortRef => '$repo#$number';
+  late final String numberString = number.toString();
 
   Map<String, dynamic> toJson() {
     return {
