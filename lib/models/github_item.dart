@@ -14,6 +14,12 @@ class GitHubItem {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  // Performance Optimization: Cache lowercased title, author, number String, and combined search target
+  // to avoid repeated O(N) string allocations during list filtering on every UI render frame.
+  late final String lowerTitle = title.toLowerCase();
+  late final String lowerAuthor = author.toLowerCase();
+  late final String numberStr = number.toString();
+
   GitHubItem({
     required this.id,
     required this.number,
@@ -28,6 +34,12 @@ class GitHubItem {
     required this.createdAt,
     required this.updatedAt,
   });
+
+  bool matchesSearchQuery(String lowerQuery) {
+    return lowerTitle.contains(lowerQuery) ||
+        numberStr.contains(lowerQuery) ||
+        lowerAuthor.contains(lowerQuery);
+  }
 
   bool get isPR => type == GitHubItemType.pullRequest;
   bool get isIssue => type == GitHubItemType.issue;
