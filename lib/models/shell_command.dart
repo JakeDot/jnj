@@ -82,37 +82,81 @@ class ParsedCommand {
     );
   }
 
+  // Performance Optimization: Use integer code units and substring slicing rather than
+  // character-by-character `input[i]` indexing and `StringBuffer.write` per character.
+  // Slicing tokens with `input.substring(start, end)` reduces intermediate object
+  // allocations and string copy overhead when parsing command inputs.
   static List<String> _tokenize(String input) {
     final tokens = <String>[];
-    final sb = StringBuffer();
-    bool inQuote = false;
-    String quoteChar = '';
+    final length = input.length;
+    int i = 0;
 
-    for (int i = 0; i < input.length; i++) {
-      final c = input[i];
+    // Code units for fast integer comparisons
+    const int space = 0x20; // ' '
+    const int doubleQuote = 0x22; // '"'
+    const int singleQuote = 0x27; // '\''
 
-      if ((c == '"' || c == "'")) {
-        if (!inQuote) {
-          inQuote = true;
-          quoteChar = c;
-        } else if (quoteChar == c) {
-          inQuote = false;
-          quoteChar = '';
-        } else {
-          sb.write(c);
-        }
-      } else if (c == ' ' && !inQuote) {
-        if (sb.isNotEmpty) {
-          tokens.add(sb.toString());
-          sb.clear();
-        }
-      } else {
-        sb.write(c);
+    StringBuffer? quotedSb;
+
+    while (i < length) {
+      // Skip leading whitespace
+      while (i < length && input.codeUnitAt(i) == space) {
+        i++;
       }
-    }
+      if (i >= length) break;
 
-    if (sb.isNotEmpty) {
-      tokens.add(sb.toString());
+      final start = i;
+      bool containsQuotes = false;
+
+      // Scan token boundaries
+      while (i < length) {
+        final code = input.codeUnitAt(i);
+        if (code == space) {
+          break;
+        } else if (code == doubleQuote || code == singleQuote) {
+          containsQuotes = true;
+          final quote = code;
+          i++; // skip open quote
+          while (i < length && input.codeUnitAt(i) != quote) {
+            i++;
+          }
+          if (i < length) {
+            i++; // skip close quote
+          }
+        } else {
+          i++;
+        }
+      }
+
+      if (!containsQuotes) {
+        // Fast path: pure substring slice without any quotes
+        tokens.add(input.substring(start, i));
+      } else {
+        // Quoted token: strip enclosing quote characters cleanly
+        quotedSb ??= StringBuffer();
+        quotedSb.clear();
+
+        int j = start;
+        int activeQuote = 0;
+
+        while (j < i) {
+          final code = input.codeUnitAt(j);
+          if (activeQuote == 0) {
+            if (code == doubleQuote || code == singleQuote) {
+              activeQuote = code;
+            } else {
+              quotedSb.writeCharCode(code);
+            }
+          } else if (code == activeQuote) {
+            activeQuote = 0;
+          } else {
+            quotedSb.writeCharCode(code);
+          }
+          j++;
+        }
+
+        tokens.add(quotedSb.toString());
+      }
     }
 
     return tokens;
