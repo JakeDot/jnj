@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:app/models/app_config.dart';
+import 'package:app/models/github_item.dart';
 import 'package:app/services/github_service.dart';
 
 void main() {
@@ -63,6 +64,27 @@ void main() {
       final issues = await gitHubService.fetchIssues(repo: 'flutter/flutter');
       expect(issues.isNotEmpty, isTrue);
       expect(issues.first.isIssue, isTrue);
+    });
+
+    test('searchableText includes number, shorthand, title, and author in lower case', () {
+      final item = GitHubItem(
+        id: '1',
+        number: 101,
+        title: 'Fix Terminal View Layout',
+        state: 'open',
+        type: GitHubItemType.pullRequest,
+        repo: 'flutter/flutter',
+        url: 'https://github.com/flutter/flutter/pull/101',
+        author: 'AlexDev',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      final search = item.searchableText;
+      expect(search.contains('101'), isTrue);
+      expect(search.contains('#101'), isTrue);
+      expect(search.contains('fix terminal view layout'), isTrue);
+      expect(search.contains('alexdev'), isTrue);
     });
   });
 }
