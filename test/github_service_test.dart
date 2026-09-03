@@ -64,5 +64,16 @@ void main() {
       expect(issues.isNotEmpty, isTrue);
       expect(issues.first.isIssue, isTrue);
     });
+
+    test('GitHubItem precomputes shortRef and matchesQuery correctly', () {
+      const url = 'https://github.com/flutter/flutter/pull/101';
+      final item = gitHubService.parseGitHubUrl(url);
+
+      expect(item, isNotNull);
+      expect(item!.shortRef, equals('flutter/flutter#101'));
+      expect(item.matchesQuery('101'), isTrue);
+      expect(item.matchesQuery('pull'), isTrue);
+      expect(item.matchesQuery('nonexistent_query'), isFalse);
+    });
   });
 }

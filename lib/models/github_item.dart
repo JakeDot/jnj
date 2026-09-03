@@ -14,6 +14,11 @@ class GitHubItem {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  // Performance Optimization: Precompute shortRef and searchKey in constructor
+  // to avoid redundant string allocations and string interpolations per render frame / keystroke.
+  final String shortRef;
+  final String searchKey;
+
   GitHubItem({
     required this.id,
     required this.number,
@@ -27,12 +32,18 @@ class GitHubItem {
     this.commentsCount = 0,
     required this.createdAt,
     required this.updatedAt,
-  });
+  })  : shortRef = '$repo#$number',
+        searchKey = '$number ${title.toLowerCase()} ${author.toLowerCase()}';
 
   bool get isPR => type == GitHubItemType.pullRequest;
   bool get isIssue => type == GitHubItemType.issue;
 
-  String get shortRef => '$repo#$number';
+  /// Fast query matching using pre-computed search key without per-frame string allocations.
+  bool matchesQuery(String query) {
+    final trimmed = query.trim().toLowerCase();
+    if (trimmed.isEmpty) return true;
+    return searchKey.contains(trimmed);
+  }
 
   Map<String, dynamic> toJson() {
     return {
