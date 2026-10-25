@@ -18,6 +18,19 @@ void main() {
     // Verify presence of Terminal tab / input prompt
     expect(find.byType(TextField), findsOneWidget);
     expect(find.textContaining('Welcome to Jules Shell Terminal'), findsOneWidget);
+    expect(find.text('jules \$ '), findsOneWidget);
+  });
+
+  testWidgets('Terminal displays custom configured account email in prompt label', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({
+      'jules_app_config': '{"firebaseUserId":"jakob@example.com"}',
+    });
+    final storageService = await StorageService.init();
+
+    await tester.pumpWidget(JulesShellApp(storageService: storageService));
+    await tester.pumpAndSettle();
+
+    expect(find.text('jakob@example.com \$ '), findsOneWidget);
   });
 
   testWidgets('Navigation switches between Terminal, Dashboard, GitHub, and Settings views', (WidgetTester tester) async {

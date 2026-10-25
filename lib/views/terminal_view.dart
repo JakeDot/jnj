@@ -160,14 +160,20 @@ class _TerminalViewState extends State<TerminalView> {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              const Text(
-                'jules \$ ',
-                style: TextStyle(
-                  color: Colors.greenAccent,
-                  fontFamily: 'monospace',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                ),
+              Builder(
+                builder: (context) {
+                  final userId = widget.shellEngine.julesApiService.config.firebaseUserId.trim();
+                  final promptLabel = (userId.isNotEmpty && userId != 'default_user') ? userId : 'jules';
+                  return Text(
+                    '$promptLabel \$ ',
+                    style: const TextStyle(
+                      color: Colors.greenAccent,
+                      fontFamily: 'monospace',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  );
+                },
               ),
               Expanded(
                 child: TextField(
