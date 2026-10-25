@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Jules Shell</string>
+    <string name="mode_self_hosted">Self-Hosted (Local Assets)</string>
+    <string name="mode_remote_server">Remote Server</string>
+    <string name="mode_native_flutter">Native Flutter Engine</string>
+
+    <string name="action_refresh">Refresh</string>
+    <string name="action_server_config">Server Configuration</string>
+    <string name="action_switch_mode">Switch Mode</string>
+
+    <string name="dialog_title_server_config">Jules Wrapper Server Configuration</string>
+    <string name="dialog_subtitle_server_config">Configure whether to self-host Flutter code locally on device or load from a remote web server.</string>
+
+    <string name="label_select_hosting_mode">Hosting Mode:</string>
+    <string name="label_remote_server_url">Remote Server URL</string>
+    <string name="hint_remote_server_url">e.g. http://10.0.2.2:8080 or https://jules.example.com</string>
+
+    <string name="label_local_port">Local HTTP Server Port</string>
+    <string name="hint_local_port">8080</string>
+
+    <string name="btn_test_connection">Test Connection</string>
+    <string name="btn_save_apply">Save &amp; Reload</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_retry">Retry Connection</string>
+    <string name="btn_switch_self_hosted">Switch to Self-Hosted</string>
+
+    <string name="preset_emulator">Emulator (10.0.2.2:8080)</string>
+    <string name="preset_localhost">Localhost (127.0.0.1:8080)</string>
+    <string name="preset_custom">Custom</string>
+
+    <string name="switch_auto_fallback">Auto-fallback to Self-Hosted if remote fails</string>
+    <string name="error_offline_title">Remote Server Unreachable</string>
+    <string name="error_offline_message">Unable to connect to the configured remote server URL. Check your network or switch to self-hosted offline mode.</string>
+</resources>

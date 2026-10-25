@@ -39,6 +39,20 @@ android {
     }
 }
 
+dependencies {
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("androidx.webkit:webkit:1.11.0")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+}
+
+tasks.register<Copy>("syncFlutterWebAssets") {
+    description = "Syncs compiled Flutter web build output to Android app assets directory for self-hosting"
+    from("../../build/web")
+    into("src/main/assets/web")
+}
+
 flutter {
     source = "../.."
 }
