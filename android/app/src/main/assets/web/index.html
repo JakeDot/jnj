@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jules Shell - Multi-Model App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <span class="brand-icon">⚡</span>
+            <span class="brand-title">Jules Shell</span>
+            <span class="badge" id="hostBadge">Multi-Model</span>
+        </div>
+        <div class="status-badge" id="btnServerConfig" onclick="openNativeServerConfig()">
+            ⚙️ Server Config
+        </div>
+    </header>
+
+    <nav>
+        <button class="tab-btn active" onclick="switchTab('terminal')">Terminal</button>
+        <button class="tab-btn" onclick="switchTab('dashboard')">Dashboard</button>
+        <button class="tab-btn" onclick="switchTab('github')">GitHub</button>
+        <button class="tab-btn" onclick="switchTab('settings')">Settings</button>
+    </nav>
+
+    <main>
+        <!-- Terminal Tab -->
+        <div id="tab-terminal" class="tab-content active">
+            <div class="card">
+                <div class="card-title">
+                    <span>💻 Interactive Multi-Model Jules Terminal</span>
+                </div>
+                <div class="terminal-box" id="terminalOutput">
+                    <div style="color: #00E5FF;">Welcome to Multi-Model Jules Shell Engine [Flutter Self-Hosted]</div>
+                    <div style="color: #89B4FA; margin-top: 4px;">Participating AI Models: Google Jules | Gemini 1.5 Pro | GPT-4o | Claude 3.5 Sonnet</div>
+                    <div style="color: #A6ADC8; margin-top: 4px; margin-bottom: 8px;">Type 'help', 'models', 'ping', 'status', or 'config' to get started.</div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="terminalInput" placeholder="Enter shell command or Jules multi-model prompt..." onkeydown="handleKey(event)">
+                    <button class="primary-btn" onclick="sendTerminalCommand()">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="tab-dashboard" class="tab-content">
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Total Executions</div>
+                    <div class="metric-val" id="metricExecutions">12</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Consensus Status</div>
+                    <div class="metric-val" style="color: #A6E3A1;">4 MODELS</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Wrapper Mode</div>
+                    <div class="metric-val" id="metricMode" style="font-size: 13px; color: #89B4FA; margin-top: 8px;">LOCAL</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🚀 Multi-Model Consensus Overview</div>
+                <p style="font-size: 13px; color: #A6ADC8; line-height: 1.5;">
+                    Prompts are evaluated in parallel across Google Jules, Gemini, GPT-4o, and Claude 3.5 Sonnet to formulate a unified consensus plan before execution in the workspace.
+                </p>
+            </div>
+        </div>
+
+        <!-- GitHub Linkage Tab -->
+        <div id="tab-github" class="tab-content">
+            <div class="card">
+                <div class="card-title">🔗 GitHub Workspace Linkage</div>
+                <div class="form-field">
+                    <label class="form-label" for="githubRepoInput">Repository</label>
+                    <input type="text" id="githubRepoInput" value="flutter/flutter">
+                </div>
+                <button class="primary-btn" onclick="saveGithubLinkage()">Connect Repository</button>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="tab-settings" class="tab-content">
+            <div class="card">
+                <div class="card-title">🔑 Google Jules AI API Key &amp; Settings</div>
+                <div class="form-field">
+                    <label class="form-label" for="julesApiKeyInput">Google Jules AI API Key</label>
+                    <input type="password" id="julesApiKeyInput" value="jules_secret_live_key">
+                </div>
+                <div class="form-field">
+                    <label class="form-label" for="baseUrlInput">Jules API Base URL</label>
+                    <input type="text" id="baseUrlInput" value="https://api.jules.ai/v1">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🧠 Multi-Model AI Providers</div>
+                <div style="font-size: 12px; color: #A6ADC8; margin-bottom: 12px;">
+                    Multi-Model Planning Stage enabled across 4 AI providers.
+                </div>
+                <div class="input-group">
+                    <button class="primary-btn" onclick="saveSettings()">Save All Multi-Model Settings</button>
+                    <button class="secondary-btn" onclick="openNativeServerConfig()">Configure Wrapper Server</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="main.dart.js"></script>
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
+        }
+
+        function handleKey(e) {
+            if (e.key === 'Enter') {
+                sendTerminalCommand();
+            }
+        }
+
+        function sendTerminalCommand() {
+            var input = document.getElementById('terminalInput');
+            var val = input.value.trim();
+            if (val.length === 0) return;
+
+            if (window.JulesEngine && window.JulesEngine.executeCommand) {
+                window.JulesEngine.executeCommand(val);
+            }
+            input.value = '';
+        }
+
+        function openNativeServerConfig() {
+            if (window.AndroidBridge && window.AndroidBridge.openServerConfig) {
+                window.AndroidBridge.openServerConfig();
+            } else {
+                alert("Android Wrapper Bridge is only active when running inside the native Android app wrapper.");
+            }
+        }
+
+        function saveGithubLinkage() {
+            var repo = document.getElementById('githubRepoInput').value;
+            if (window.AndroidBridge && window.AndroidBridge.showToast) {
+                window.AndroidBridge.showToast("Linked repository: " + repo);
+            } else {
+                alert("Linked repository: " + repo);
+            }
+        }
+
+        function saveSettings() {
+            if (window.AndroidBridge && window.AndroidBridge.showToast) {
+                window.AndroidBridge.showToast("Google Jules AI & Multi-Model settings saved.");
+            } else {
+                alert("Google Jules AI & Multi-Model settings saved.");
+            }
+        }
+
+        // Initialize Bridge info
+        window.addEventListener('DOMContentLoaded', function() {
+            if (window.AndroidBridge && window.AndroidBridge.getHostingMode) {
+                var mode = window.AndroidBridge.getHostingMode();
+                document.getElementById('hostBadge').innerText = mode;
+                document.getElementById('metricMode').innerText = mode;
+            }
+        });
+    </script>
+</body>
+</html>

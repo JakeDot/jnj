@@ -1,0 +1,220 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+}
+
+body {
+    background-color: #1E1E2E;
+    color: #CDD6F4;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+header {
+    background-color: #181825;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #313244;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-icon {
+    color: #00E5FF;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.brand-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+.badge {
+    background: rgba(0, 229, 255, 0.15);
+    color: #00E5FF;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 229, 255, 0.3);
+}
+
+.status-badge {
+    background: rgba(137, 180, 250, 0.15);
+    color: #89B4FA;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    border: 1px solid rgba(137, 180, 250, 0.3);
+}
+
+.status-badge:hover {
+    background: rgba(137, 180, 250, 0.25);
+}
+
+nav {
+    display: flex;
+    background-color: #181825;
+    border-bottom: 1px solid #313244;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px 8px;
+    background: transparent;
+    border: none;
+    color: #A6ADC8;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+    color: #00E5FF;
+    border-bottom-color: #00E5FF;
+    background: rgba(0, 229, 255, 0.05);
+}
+
+main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.card {
+    background-color: #181825;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid #313244;
+}
+
+.card-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #FFFFFF;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.terminal-box {
+    background-color: #11111B;
+    border: 1px solid #313244;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 13px;
+    color: #A6E3A1;
+    min-height: 180px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+}
+
+.input-group {
+    display: flex;
+    gap: 8px;
+}
+
+input, select {
+    flex: 1;
+    background-color: #11111B;
+    border: 1px solid #313244;
+    color: #FFFFFF;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+}
+
+input:focus, select:focus {
+    border-color: #00E5FF;
+}
+
+button.primary-btn {
+    background-color: #00E5FF;
+    color: #181825;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+button.primary-btn:hover {
+    background-color: #89B4FA;
+}
+
+button.secondary-btn {
+    background-color: #313244;
+    color: #CDD6F4;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.metric-card {
+    background-color: #11111B;
+    border: 1px solid #313244;
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.metric-val {
+    font-size: 20px;
+    font-weight: bold;
+    color: #00E5FF;
+    margin-top: 4px;
+}
+
+.metric-label {
+    font-size: 11px;
+    color: #A6ADC8;
+}
+
+.form-label {
+    font-size: 12px;
+    color: #A6ADC8;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.form-field {
+    margin-bottom: 14px;
+}

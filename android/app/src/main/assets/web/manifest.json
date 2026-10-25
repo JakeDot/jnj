@@ -1,0 +1,9 @@
+{
+  "name": "Jules Shell Web App",
+  "short_name": "JulesShell",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#1E1E2E",
+  "theme_color": "#181825",
+  "description": "Jules Shell Flutter Self-Hosted Web Application"
+}
