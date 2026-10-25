@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -44,7 +44,23 @@ jobs:
         run: flutter test
 
       - name: Build Web Application
-        run: flutter build web --release --dart-define=JULES_API_KEY=${{ secrets.JULES_API_KEY }} --base-href "/${{ github.event.repository.name }}/"
+        run: |
+          if [[ "${{ github.repository }}" == *.github.io ]]; then
+            BASE_HREF="/"
+          else
+            REPO_NAME=$(echo "${{ github.repository }}" | awk -F'/' '{print $2}')
+            BASE_HREF="/${REPO_NAME}/"
+          fi
+          flutter build web --release --dart-define=JULES_API_KEY=${{ secrets.JULES_API_KEY }} --base-href "$BASE_HREF"
+          touch build/web/.nojekyll
+          cp build/web/index.html build/web/404.html
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          force_orphan: true
 
       - name: Upload GitHub Pages Artifact
         uses: actions/upload-pages-artifact@v3
