@@ -15,6 +15,14 @@ def main():
     try:
         subprocess.run(["flutter", "build", "web"], check=True, cwd=root_dir)
         print("[Jules Shell Wrapper Sync] Flutter build web completed successfully.")
+
+        # Create .nojekyll and 404.html for GitHub Pages & web deployment
+        nojekyll = os.path.join(build_web_dir, ".nojekyll")
+        open(nojekyll, "a").close()
+        index_html = os.path.join(build_web_dir, "index.html")
+        html_404 = os.path.join(build_web_dir, "404.html")
+        if os.path.exists(index_html):
+            shutil.copy2(index_html, html_404)
     except Exception as e:
         print(f"[Jules Shell Wrapper Sync] Warning: 'flutter build web' failed or flutter SDK not in PATH ({e}).")
         print("[Jules Shell Wrapper Sync] Proceeding with existing assets...")
