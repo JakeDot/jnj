@@ -10,8 +10,8 @@ void main() {
 
     setUp(() {
       apiService = JulesApiService(
-        config: const AppConfig(
-          apiKey: 'mock_jules_api_key',
+        config: AppConfig(
+          julesApiKey: 'mock_jules_api_key',
           useMockMode: true,
         ),
       );
@@ -22,7 +22,7 @@ void main() {
 
       expect(request.prompt, equals('Fix issue in shell input'));
       expect(request.status, equals(RequestStatus.completed));
-      expect(request.response, contains('Automated Solution Plan'));
+      expect(request.response, contains('Automated Patch & Execution Plan'));
       expect(request.executionLogs.isNotEmpty, isTrue);
     });
 

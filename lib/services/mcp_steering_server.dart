@@ -152,7 +152,8 @@ class McpSteeringServer {
     final jsonrpc = request['jsonrpc'] as String? ?? '2.0';
     final id = request['id'];
     final method = request['method'] as String? ?? '';
-    final params = request['params'] as Map<String, dynamic>? ?? {};
+    final rawParams = request['params'];
+    final params = rawParams is Map ? Map<String, dynamic>.from(rawParams) : <String, dynamic>{};
 
     if (jsonrpc != '2.0') {
       return _buildErrorResponse(id, -32600, 'Invalid JSON-RPC version.');
@@ -188,7 +189,8 @@ class McpSteeringServer {
 
         case 'tools/call':
           final name = params['name'] as String? ?? '';
-          final arguments = params['arguments'] as Map<String, dynamic>? ?? {};
+          final rawArgs = params['arguments'];
+          final arguments = rawArgs is Map ? Map<String, dynamic>.from(rawArgs) : <String, dynamic>{};
           final toolResult = await executeTool(name, arguments);
           return {
             'jsonrpc': '2.0',
