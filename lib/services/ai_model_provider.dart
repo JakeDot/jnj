@@ -104,7 +104,7 @@ class GeminiModelProvider extends BaseAiProvider {
 
     if (mcpServer != null) {
       // Query peer proposals from MCP server
-      final peerQueryResult = await mcpServer.executeTool('mcp_query_peer_model', {
+      await mcpServer.executeTool('mcp_query_peer_model', {
         'query': 'primary_code_proposal',
       });
 

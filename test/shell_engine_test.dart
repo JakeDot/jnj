@@ -12,8 +12,8 @@ void main() {
     late GitHubService gitHubService;
 
     setUp(() {
-      const config = AppConfig(
-        apiKey: 'mock_jules_api_key',
+      final config = AppConfig(
+        julesApiKey: 'mock_jules_api_key',
         defaultRepo: 'flutter/flutter',
         useMockMode: true,
       );

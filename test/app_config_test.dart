@@ -4,7 +4,7 @@ import 'package:app/models/app_config.dart';
 void main() {
   group('AppConfig Tests', () {
     test('Default AppConfig values are correct', () {
-      const config = AppConfig.defaultConfig;
+      final config = AppConfig.defaultConfig;
 
       expect(config.defaultRepo, equals('flutter/flutter'));
       expect(config.baseUrl, equals('https://api.jules.ai/v1'));
@@ -14,9 +14,9 @@ void main() {
     });
 
     test('copyWith updates properties correctly', () {
-      const config = AppConfig.defaultConfig;
+      final config = AppConfig.defaultConfig;
       final updated = config.copyWith(
-        apiKey: 'test_key',
+        julesApiKey: 'test_key',
         remoteServerUrl: 'https://jules.example.com',
         isSelfHosted: false,
       );
@@ -28,11 +28,11 @@ void main() {
     });
 
     test('toJson and fromJson preserve values', () {
-      const config = AppConfig(
-        apiKey: 'secret_123',
+      final config = AppConfig(
+        julesApiKey: 'secret_123',
         githubToken: 'ghp_abc',
         defaultRepo: 'owner/repo',
-        baseUrl: 'https://custom.api/v1',
+        julesBaseUrl: 'https://custom.api/v1',
         useMockMode: false,
         remoteServerUrl: 'http://192.168.1.50:8080',
         isSelfHosted: false,

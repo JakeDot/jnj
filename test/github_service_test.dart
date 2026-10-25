@@ -8,8 +8,8 @@ void main() {
 
     setUp(() {
       gitHubService = GitHubService(
-        config: const AppConfig(
-          apiKey: 'test-key',
+        config: AppConfig(
+          julesApiKey: 'test-key',
           defaultRepo: 'flutter/flutter',
         ),
       );

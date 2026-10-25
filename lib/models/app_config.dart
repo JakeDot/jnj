@@ -16,7 +16,7 @@ class AppConfig {
   final bool enableCloudSync;
 
   const AppConfig({
-    required this.julesApiKey,
+    this.julesApiKey = '',
     this.julesBaseUrl = 'https://api.jules.ai/v1',
     this.githubToken = '',
     this.defaultRepo = 'flutter/flutter',
@@ -123,7 +123,7 @@ class AppConfig {
     );
   }
 
-  static AppConfig defaultConfig = AppConfig(
+  static final AppConfig defaultConfig = AppConfig(
     julesApiKey: _envApiKey,
     julesBaseUrl: 'https://api.jules.ai/v1',
     githubToken: '',
