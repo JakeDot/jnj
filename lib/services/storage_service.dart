@@ -2,18 +2,23 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/app_config.dart';
 import '../models/jules_request.dart';
+import 'firebase_settings_service.dart';
 
 class StorageService {
   static const String _configKey = 'jules_app_config';
   static const String _requestsKey = 'jules_saved_requests';
 
   final SharedPreferences _prefs;
+  final FirebaseSettingsService _firebaseService;
 
-  StorageService(this._prefs);
+  StorageService(this._prefs, [FirebaseSettingsService? firebaseService])
+      : _firebaseService = firebaseService ?? FirebaseSettingsService();
+
+  FirebaseSettingsService get firebaseService => _firebaseService;
 
   static Future<StorageService> init() async {
     final prefs = await SharedPreferences.getInstance();
-    return StorageService(prefs);
+    return StorageService(prefs, FirebaseSettingsService());
   }
 
   AppConfig loadConfig() {
@@ -31,7 +36,13 @@ class StorageService {
 
   Future<bool> saveConfig(AppConfig config) async {
     final raw = jsonEncode(config.toJson());
-    return await _prefs.setString(_configKey, raw);
+    final localSuccess = await _prefs.setString(_configKey, raw);
+
+    if (config.enableCloudSync) {
+      _firebaseService.saveSettingsToFirebase(config: config);
+    }
+
+    return localSuccess;
   }
 
   List<JulesRequest> loadRequests() {

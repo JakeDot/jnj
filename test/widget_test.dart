@@ -40,6 +40,6 @@ void main() {
     // Tap Settings tab
     await tester.tap(find.byIcon(Icons.settings));
     await tester.pumpAndSettle();
-    expect(find.text('Jules API Key & Security'), findsOneWidget);
+    expect(find.text('Google Jules AI API Configuration'), findsOneWidget);
   });
 }

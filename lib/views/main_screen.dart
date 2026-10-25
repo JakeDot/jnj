@@ -77,6 +77,7 @@ class _MainScreenState extends State<MainScreen> {
         config: _config,
         onConfigSaved: _onConfigUpdated,
         julesApiService: _julesApiService,
+        storageService: widget.storageService,
       ),
     ];
 
