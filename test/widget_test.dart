@@ -18,7 +18,23 @@ void main() {
     // Verify presence of Terminal tab / input prompt
     expect(find.byType(TextField), findsOneWidget);
     expect(find.textContaining('Welcome to Jules Shell Terminal'), findsOneWidget);
-    expect(find.text('jules \$ '), findsOneWidget);
+    expect(find.text('anonymous \$ '), findsOneWidget);
+  });
+
+  testWidgets('Terminal toggles root mode prompt anonymous # on /root command', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final storageService = await StorageService.init();
+
+    await tester.pumpWidget(JulesShellApp(storageService: storageService));
+    await tester.pumpAndSettle();
+
+    expect(find.text('anonymous \$ '), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), '/root');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+
+    expect(find.text('anonymous # '), findsOneWidget);
   });
 
   testWidgets('Terminal displays custom configured account email in prompt label', (WidgetTester tester) async {

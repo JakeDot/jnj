@@ -23,6 +23,7 @@ class ShellEngine {
   late final UnmodifiableListView<JulesRequest> _unmodifiableRequestHistory = UnmodifiableListView(_requestHistory);
 
   GitHubItem? _activeGitHubContext;
+  bool _isRootMode = false;
 
   ShellEngine({
     required this.julesApiService,
@@ -41,6 +42,7 @@ class ShellEngine {
   List<String> get commandHistory => _unmodifiableCommandHistory;
   List<JulesRequest> get requestHistory => _unmodifiableRequestHistory;
   GitHubItem? get activeGitHubContext => _activeGitHubContext;
+  bool get isRootMode => _isRootMode;
 
   void setRequests(List<JulesRequest> requests) {
     _requestHistory.clear();
@@ -78,6 +80,14 @@ class ShellEngine {
     final parsed = ParsedCommand.parse(input);
 
     switch (parsed.command) {
+      case '/root':
+      case 'root':
+        _isRootMode = !_isRootMode;
+        final statusMsg = _isRootMode
+            ? '🔓 Root Mode ENABLED (# prompt active). AI model plans are auto-approved.'
+            : '🔒 Root Mode DISABLED (\$ prompt active).';
+        return _addAndReturn(ShellOutput(content: statusMsg, type: ShellOutputType.info));
+
       case 'help':
       case 'h':
       case '?':
@@ -176,8 +186,9 @@ class ShellEngine {
 
     _requestHistory.insert(0, request);
 
+    final autoApprovalBanner = _isRootMode ? ' [AUTO-APPROVED]' : '';
     final out = ShellOutput(
-      content: '✅ Jules Execution Complete:\n\n${request.response}',
+      content: '✅ Jules Execution Complete$autoApprovalBanner:\n\n${request.response}',
       type: ShellOutputType.success,
       request: request,
     );

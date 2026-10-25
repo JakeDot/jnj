@@ -62,5 +62,20 @@ void main() {
       expect(output.type, equals(ShellOutputType.success));
       expect(julesApiService.config.apiKey, equals('new_key_123'));
     });
+
+    test('Toggles Root Mode via /root and auto-approves plans', () async {
+      expect(engine.isRootMode, isFalse);
+
+      final toggleOn = await engine.executeInput('/root');
+      expect(engine.isRootMode, isTrue);
+      expect(toggleOn.content, contains('Root Mode ENABLED'));
+
+      final sendOutput = await engine.executeInput('send "Refactor module"');
+      expect(sendOutput.content, contains('[AUTO-APPROVED]'));
+
+      final toggleOff = await engine.executeInput('/root');
+      expect(engine.isRootMode, isFalse);
+      expect(toggleOff.content, contains('Root Mode DISABLED'));
+    });
   });
 }

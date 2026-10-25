@@ -163,11 +163,12 @@ class _TerminalViewState extends State<TerminalView> {
               Builder(
                 builder: (context) {
                   final userId = widget.shellEngine.julesApiService.config.firebaseUserId.trim();
-                  final promptLabel = (userId.isNotEmpty && userId != 'default_user') ? userId : 'jules';
+                  final promptLabel = (userId.isNotEmpty && userId != 'default_user') ? userId : 'anonymous';
+                  final symbol = widget.shellEngine.isRootMode ? '#' : '\$';
                   return Text(
-                    '$promptLabel \$ ',
-                    style: const TextStyle(
-                      color: Colors.greenAccent,
+                    '$promptLabel $symbol ',
+                    style: TextStyle(
+                      color: widget.shellEngine.isRootMode ? Colors.redAccent : Colors.greenAccent,
                       fontFamily: 'monospace',
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
