@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/ai_model_config.dart';
 import '../models/app_config.dart';
+import '../services/android_wrapper_service.dart';
 import '../services/jules_api_service.dart';
 import '../services/storage_service.dart';
 
@@ -10,6 +11,7 @@ class SettingsView extends StatefulWidget {
   final Function(AppConfig) onConfigSaved;
   final JulesApiService julesApiService;
   final StorageService? storageService;
+  final AndroidWrapperService? androidWrapperService;
 
   const SettingsView({
     super.key,
@@ -17,6 +19,7 @@ class SettingsView extends StatefulWidget {
     required this.onConfigSaved,
     required this.julesApiService,
     this.storageService,
+    this.androidWrapperService,
   });
 
   @override
@@ -25,6 +28,7 @@ class SettingsView extends StatefulWidget {
 
 class _SettingsViewState extends State<SettingsView> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late AndroidWrapperService _wrapperService;
 
   // App Settings Controllers
   late TextEditingController _julesApiKeyController;
@@ -51,6 +55,7 @@ class _SettingsViewState extends State<SettingsView> with SingleTickerProviderSt
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _wrapperService = widget.androidWrapperService ?? AndroidWrapperService();
 
     _julesApiKeyController = TextEditingController(text: widget.config.julesApiKey);
     _julesBaseUrlController = TextEditingController(text: widget.config.julesBaseUrl);
@@ -619,9 +624,125 @@ class _SettingsViewState extends State<SettingsView> with SingleTickerProviderSt
   }
 
   Widget _buildServerSettingsTab() {
+    final isWrapper = _wrapperService.isAndroidWrapper();
+    final wrapperMode = _wrapperService.getHostingMode();
+    final activeUrl = _wrapperService.getActiveUrl();
+
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
+        // Native Android Wrapper Interface Card
+        const Text(
+          'Native Android Wrapper Controls',
+          style: TextStyle(color: Colors.cyanAccent, fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFF181825),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: isWrapper ? Colors.cyanAccent : const Color(0xFF313244)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    isWrapper ? Icons.android : Icons.phone_android,
+                    color: isWrapper ? Colors.cyanAccent : Colors.white54,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    isWrapper ? 'Android Native Wrapper Connected' : 'Android Wrapper Bridge Inactive',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: isWrapper ? Colors.green.withValues(alpha: 0.2) : Colors.white10,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      isWrapper ? 'ACTIVE ($wrapperMode)' : 'STANDALONE',
+                      style: TextStyle(
+                        color: isWrapper ? Colors.greenAccent : Colors.white54,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                isWrapper
+                    ? 'Active URL: $activeUrl'
+                    : 'Run inside the Android Wrapper App to enable native Kotlin bridge controls, self-hosting server, and Material dialogs.',
+                style: const TextStyle(color: Colors.white70, fontSize: 12),
+              ),
+              const SizedBox(height: 14),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.cyanAccent,
+                      foregroundColor: Colors.black,
+                    ),
+                    icon: const Icon(Icons.settings, size: 16),
+                    label: const Text('Open Native Server Config'),
+                    onPressed: () {
+                      final success = _wrapperService.openServerConfig();
+                      if (!success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Android Bridge not available in standalone mode.'),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.cyanAccent,
+                      side: const BorderSide(color: Colors.cyanAccent),
+                    ),
+                    icon: const Icon(Icons.refresh, size: 16),
+                    label: const Text('Reload WebView'),
+                    onPressed: () {
+                      _wrapperService.reloadApp();
+                    },
+                  ),
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white70,
+                      side: const BorderSide(color: Colors.white30),
+                    ),
+                    icon: const Icon(Icons.notifications_active, size: 16),
+                    label: const Text('Test Toast'),
+                    onPressed: () {
+                      final success = _wrapperService.showToast('Jules Shell: Hello from Flutter!');
+                      if (!success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Toast triggered (Standalone mode).'),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 24),
+
         const Text(
           'Android Wrapper Host & Server',
           style: TextStyle(color: Colors.cyanAccent, fontWeight: FontWeight.bold, fontSize: 16),

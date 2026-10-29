@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/app_config.dart';
+import '../services/android_wrapper_service.dart';
 import '../services/github_service.dart';
 import '../services/jules_api_service.dart';
 import '../services/shell_engine.dart';
@@ -12,10 +13,12 @@ import 'terminal_view.dart';
 
 class MainScreen extends StatefulWidget {
   final StorageService storageService;
+  final AndroidWrapperService? androidWrapperService;
 
   const MainScreen({
     super.key,
     required this.storageService,
+    this.androidWrapperService,
   });
 
   @override
@@ -27,6 +30,7 @@ class _MainScreenState extends State<MainScreen> {
   late JulesApiService _julesApiService;
   late GitHubService _gitHubService;
   late ShellEngine _shellEngine;
+  late AndroidWrapperService _wrapperService;
 
   int _selectedTabIndex = 0;
 
@@ -34,6 +38,7 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     _config = widget.storageService.loadConfig();
+    _wrapperService = widget.androidWrapperService ?? AndroidWrapperService();
 
     _julesApiService = JulesApiService(config: _config);
     _gitHubService = GitHubService(config: _config);
@@ -60,6 +65,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width >= 800;
+    final isAndroidWrapper = _wrapperService.isAndroidWrapper();
 
     final pages = [
       TerminalView(shellEngine: _shellEngine),
@@ -78,6 +84,7 @@ class _MainScreenState extends State<MainScreen> {
         onConfigSaved: _onConfigUpdated,
         julesApiService: _julesApiService,
         storageService: widget.storageService,
+        androidWrapperService: _wrapperService,
       ),
     ];
 
@@ -98,12 +105,18 @@ class _MainScreenState extends State<MainScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.cyanAccent.withValues(alpha: 0.2),
+                color: isAndroidWrapper
+                    ? Colors.green.withValues(alpha: 0.2)
+                    : Colors.cyanAccent.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Text(
-                'Windows & Android',
-                style: TextStyle(color: Colors.cyanAccent, fontSize: 11, fontWeight: FontWeight.w600),
+              child: Text(
+                isAndroidWrapper ? 'Android Wrapper' : 'Windows & Android',
+                style: TextStyle(
+                  color: isAndroidWrapper ? Colors.greenAccent : Colors.cyanAccent,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
